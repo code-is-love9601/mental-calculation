@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Daily Math Challenge</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+    input { padding: 8px; margin: 10px; }
+    button { padding: 10px 20px; }
+    #result { margin-top: 20px; font-weight: bold; }
+    #streak { margin-top: 20px; color: green; font-size: 18px; }
+    #progress { margin-top: 10px; color: blue; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>Daily Math Challenge</h1>
+  <p id="question"></p>
+  <input type="number" id="answer" placeholder="Enter your answer">
+  <button onclick="checkAnswer()">Submit</button>
+  <p id="result"></p>
+  <p id="progress"></p>
+  <p id="streak"></p>
+
+  <script>
+    let num1, num2;
+    let streak = localStorage.getItem("streak") ? parseInt(localStorage.getItem("streak")) : 0;
+    let lastPlayed = localStorage.getItem("lastPlayed");
+    let correctCount = localStorage.getItem("correctCount") ? parseInt(localStorage.getItem("correctCount")) : 0;
+
+    function getToughNumber(min, max) {
+      let num;
+      do {
+        num = Math.floor(Math.random() * (max - min + 1)) + min;
+      } while ([10, 12, 20, 25, 50].includes(num)); // skip easy multipliers
+      return num;
+    }
+
+    function newQuestion() {
+      num1 = getToughNumber(10, 99);   // first number up to 99
+      num2 = getToughNumber(15, 975);  // second number up to 975
+      document.getElementById("question").innerText = `What is ${num1} × ${num2}?`;
+      document.getElementById("answer").value = "";
+      document.getElementById("result").innerText = "";
+      updateDisplays();
+    }
+
+    function checkAnswer() {
+      let userAnswer = document.getElementById("answer").value;
+      let correctAnswer = num1 * num2;
+      let today = new Date().toDateString();
+
+      if (parseInt(userAnswer) === correctAnswer) {
+        document.getElementById("result").innerText = "✅ Correct!";
+        if (lastPlayed !== today) {
+          correctCount = 0; // reset daily count if new day
+          lastPlayed = today;
+          localStorage.setItem("lastPlayed", today);
+        }
+        correctCount++;
+        localStorage.setItem("correctCount", correctCount);
+
+        if (correctCount >= 100) {
+          streak++;
+          correctCount = 0; // reset after completing 100
+          localStorage.setItem("streak", streak);
+          localStorage.setItem("correctCount", correctCount);
+          alert("🎉 You completed 100 questions today! Streak +1 day!");
+        }
+      } else {
+        document.getElementById("result").innerText = `❌ Wrong. The answer is ${correctAnswer}`;
+        correctCount = 0; // reset progress if wrong
+        localStorage.setItem("correctCount", correctCount);
+      }
+      updateDisplays();
+      setTimeout(newQuestion, 2000);
+    }
+
+    function updateDisplays() {
+      document.getElementById("streak").innerText = `🔥 Current Streak: ${streak} days`;
+      document.getElementById("progress").innerText = `📊 Progress: ${correctCount}/100 correct today`;
+    }
+
+    newQuestion();
+  </script>
+</body>
+</html>
