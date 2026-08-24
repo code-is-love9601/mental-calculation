@@ -3,7 +3,12 @@
 <head>
   <title>Daily Math Challenge</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+    body { 
+      font-family: Arial, sans-serif; 
+      text-align: center; 
+      margin-top: 50px; 
+      background: linear-gradient(to right, #f0f8ff, #c7d2fe); /* light blue gradient */
+    }
     input { padding: 8px; margin: 10px; }
     button { padding: 10px 20px; }
     #result { margin-top: 20px; font-weight: bold; }
@@ -35,6 +40,13 @@
     }
 
     function newQuestion() {
+      let today = new Date().toDateString();
+      if (lastPlayed !== today) {
+        correctCount = 0;
+        lastPlayed = today;
+        localStorage.setItem("lastPlayed", today);
+        localStorage.setItem("correctCount", correctCount);
+      }
       num1 = getToughNumber(10, 99);   // first number up to 99
       num2 = getToughNumber(15, 975);  // second number up to 975
       document.getElementById("question").innerText = `What is ${num1} × ${num2}?`;
@@ -51,7 +63,7 @@
       if (parseInt(userAnswer) === correctAnswer) {
         document.getElementById("result").innerText = "✅ Correct!";
         if (lastPlayed !== today) {
-          correctCount = 0; // reset daily count if new day
+          correctCount = 0;
           lastPlayed = today;
           localStorage.setItem("lastPlayed", today);
         }
@@ -65,13 +77,15 @@
           localStorage.setItem("correctCount", correctCount);
           alert("🎉 You completed 100 questions today! Streak +1 day!");
         }
+        updateDisplays();
+        newQuestion(); // ✅ only when correct
       } else {
-        document.getElementById("result").innerText = `❌ Wrong. The answer is ${correctAnswer}`;
-        correctCount = 0; // reset progress if wrong
+        document.getElementById("result").innerText = `❌ Wrong. Try again!`;
+        correctCount = 0; 
         localStorage.setItem("correctCount", correctCount);
+        updateDisplays();
+        // ❌ no newQuestion() here, same question repeats until correct
       }
-      updateDisplays();
-      setTimeout(newQuestion, 2000);
     }
 
     function updateDisplays() {
