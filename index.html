@@ -70,12 +70,12 @@
         correctCount++;
         localStorage.setItem("correctCount", correctCount);
 
-        if (correctCount >= 100) {
+        if (correctCount >= 50) {
           streak++;
           correctCount = 0; // reset after completing 100
           localStorage.setItem("streak", streak);
           localStorage.setItem("correctCount", correctCount);
-          alert("🎉 You completed 100 questions today! Streak +1 day!");
+          alert("🎉 You completed 50 questions today! Streak +1 day!");
         }
         updateDisplays();
         newQuestion(); // ✅ only when correct
@@ -90,7 +90,7 @@
 
     function updateDisplays() {
       document.getElementById("streak").innerText = `🔥 Current Streak: ${streak} days`;
-      document.getElementById("progress").innerText = `📊 Progress: ${correctCount}/100 correct today`;
+      document.getElementById("progress").innerText = `📊 Progress: ${correctCount}/50 correct today`;
     }
 
     newQuestion();
