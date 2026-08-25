@@ -1,99 +1,186 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Daily Math Challenge</title>
-  <style>
-    body { 
-      font-family: Arial, sans-serif; 
-      text-align: center; 
-      margin-top: 50px; 
-      background: linear-gradient(to right, #f0f8ff, #c7d2fe); /* light blue gradient */
+<script>
+
+  let num1, num2;
+
+  let streak = localStorage.getItem("streak")
+    ? parseInt(localStorage.getItem("streak"))
+    : 0;
+
+  let lastPlayed = localStorage.getItem("lastPlayed");
+
+  let correctCount = localStorage.getItem("correctCount")
+    ? parseInt(localStorage.getItem("correctCount"))
+    : 0;
+
+
+  function getToughNumber(min, max) {
+
+    let num;
+
+    do {
+      num = Math.floor(
+        Math.random() * (max - min + 1)
+      ) + min;
+
+    } while (
+      [10, 12, 20, 25, 50].includes(num)
+    );
+
+    return num;
+  }
+
+
+  function newQuestion() {
+
+    num1 = getToughNumber(10, 99);
+    num2 = getToughNumber(15, 975);
+
+    // 🔥 Current question save karo
+    localStorage.setItem("num1", num1);
+    localStorage.setItem("num2", num2);
+
+    showQuestion();
+  }
+
+
+  function showQuestion() {
+
+    document.getElementById("question").innerText =
+      `What is ${num1} × ${num2}?`;
+
+    document.getElementById("answer").value = "";
+
+    document.getElementById("result").innerText = "";
+
+    updateDisplays();
+
+    document.getElementById("answer").focus();
+  }
+
+
+  function loadQuestion() {
+
+    let savedNum1 = localStorage.getItem("num1");
+    let savedNum2 = localStorage.getItem("num2");
+
+    // 🔥 Agar question pehle se saved hai
+    if (savedNum1 !== null && savedNum2 !== null) {
+
+      num1 = parseInt(savedNum1);
+      num2 = parseInt(savedNum2);
+
+      showQuestion();
+
+    } else {
+
+      // Pehli baar website khuli
+      newQuestion();
     }
-    input { padding: 8px; margin: 10px; }
-    button { padding: 10px 20px; }
-    #result { margin-top: 20px; font-weight: bold; }
-    #streak { margin-top: 20px; color: green; font-size: 18px; }
-    #progress { margin-top: 10px; color: blue; font-size: 16px; }
-  </style>
-</head>
-<body>
-  <h1>Daily Math Challenge</h1>
-  <p id="question"></p>
-  <input type="number" id="answer" placeholder="Enter your answer">
-  <button onclick="checkAnswer()">Submit</button>
-  <p id="result"></p>
-  <p id="progress"></p>
-  <p id="streak"></p>
+  }
 
-  <script>
-    let num1, num2;
-    let streak = localStorage.getItem("streak") ? parseInt(localStorage.getItem("streak")) : 0;
-    let lastPlayed = localStorage.getItem("lastPlayed");
-    let correctCount = localStorage.getItem("correctCount") ? parseInt(localStorage.getItem("correctCount")) : 0;
 
-    function getToughNumber(min, max) {
-      let num;
-      do {
-        num = Math.floor(Math.random() * (max - min + 1)) + min;
-      } while ([10, 12, 20, 25, 50].includes(num)); // skip easy multipliers
-      return num;
-    }
+  function checkAnswer() {
 
-    function newQuestion() {
-      let today = new Date().toDateString();
+    let userAnswer =
+      document.getElementById("answer").value;
+
+    let correctAnswer = num1 * num2;
+
+    let today = new Date().toDateString();
+
+
+    // ✅ Correct answer
+    if (parseInt(userAnswer) === correctAnswer) {
+
+      document.getElementById("result").innerText =
+        "✅ Correct!";
+
+
       if (lastPlayed !== today) {
+
         correctCount = 0;
+
         lastPlayed = today;
-        localStorage.setItem("lastPlayed", today);
-        localStorage.setItem("correctCount", correctCount);
+
+        localStorage.setItem(
+          "lastPlayed",
+          today
+        );
       }
-      num1 = getToughNumber(10, 99);   // first number up to 99
-      num2 = getToughNumber(15, 975);  // second number up to 975
-      document.getElementById("question").innerText = `What is ${num1} × ${num2}?`;
-      document.getElementById("answer").value = "";
-      document.getElementById("result").innerText = "";
+
+
+      correctCount++;
+
+      localStorage.setItem(
+        "correctCount",
+        correctCount
+      );
+
+
+      // 🎯 50 questions complete = +1 streak
+      if (correctCount >= 50) {
+
+        streak++;
+
+        correctCount = 0;
+
+        localStorage.setItem(
+          "streak",
+          streak
+        );
+
+        localStorage.setItem(
+          "correctCount",
+          correctCount
+        );
+
+        alert(
+          "🎉 You completed 50 questions today! Streak +1 day!"
+        );
+      }
+
+
       updateDisplays();
+
+
+      // 🔥 Correct hone ke baad hi NEW question
+      setTimeout(newQuestion, 1000);
+
     }
 
-    function checkAnswer() {
-      let userAnswer = document.getElementById("answer").value;
-      let correctAnswer = num1 * num2;
-      let today = new Date().toDateString();
 
-      if (parseInt(userAnswer) === correctAnswer) {
-        document.getElementById("result").innerText = "✅ Correct!";
-        if (lastPlayed !== today) {
-          correctCount = 0;
-          lastPlayed = today;
-          localStorage.setItem("lastPlayed", today);
-        }
-        correctCount++;
-        localStorage.setItem("correctCount", correctCount);
+    // ❌ Wrong answer
+    else {
 
-        if (correctCount >= 50) {
-          streak++;
-          correctCount = 0; // reset after completing 100
-          localStorage.setItem("streak", streak);
-          localStorage.setItem("correctCount", correctCount);
-          alert("🎉 You completed 50 questions today! Streak +1 day!");
-        }
-        updateDisplays();
-        newQuestion(); // ✅ only when correct
-      } else {
-        document.getElementById("result").innerText = `❌ Wrong. Try again!`;
-        correctCount = 0; 
-        localStorage.setItem("correctCount", correctCount);
-        updateDisplays();
-        // ❌ no newQuestion() here, same question repeats until correct
-      }
+      document.getElementById("result").innerText =
+        "❌ Wrong. Try again!";
+
+      correctCount = 0;
+
+      localStorage.setItem(
+        "correctCount",
+        correctCount
+      );
+
+      updateDisplays();
+
+      // ❌ New question nahi aayega
     }
+  }
 
-    function updateDisplays() {
-      document.getElementById("streak").innerText = `🔥 Current Streak: ${streak} days`;
-      document.getElementById("progress").innerText = `📊 Progress: ${correctCount}/50 correct today`;
-    }
 
-    newQuestion();
-  </script>
-</body>
-</html>
+  function updateDisplays() {
+
+    document.getElementById("streak").innerText =
+      `🔥 Current Streak: ${streak} days`;
+
+    document.getElementById("progress").innerText =
+      `📊 Progress: ${correctCount}/50 correct today`;
+  }
+
+
+  // 🚀 Website open/refresh hone par
+  // saved question load hoga
+  loadQuestion();
+
+</script>
