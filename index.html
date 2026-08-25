@@ -1,3 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Daily Math Challenge</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+
+    input {
+      padding: 8px;
+      margin: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    #streak,
+    #progress {
+      margin-top: 15px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>🧠 Daily Math Challenge</h1>
+
+  <h2 id="question"></h2>
+
+  <input
+    type="number"
+    id="answer"
+    placeholder="Enter answer"
+  >
+
+  <br>
+
+  <button onclick="checkAnswer()">Submit</button>
+
+  <div id="result"></div>
+
+  <div id="streak"></div>
+
+  <div id="progress"></div>
+
+
 <script>
 
   let num1, num2;
@@ -35,7 +93,6 @@
     num1 = getToughNumber(10, 99);
     num2 = getToughNumber(15, 975);
 
-    // 🔥 Current question save karo
     localStorage.setItem("num1", num1);
     localStorage.setItem("num2", num2);
 
@@ -63,7 +120,6 @@
     let savedNum1 = localStorage.getItem("num1");
     let savedNum2 = localStorage.getItem("num2");
 
-    // 🔥 Agar question pehle se saved hai
     if (savedNum1 !== null && savedNum2 !== null) {
 
       num1 = parseInt(savedNum1);
@@ -73,7 +129,6 @@
 
     } else {
 
-      // Pehli baar website khuli
       newQuestion();
     }
   }
@@ -89,7 +144,6 @@
     let today = new Date().toDateString();
 
 
-    // ✅ Correct answer
     if (parseInt(userAnswer) === correctAnswer) {
 
       document.getElementById("result").innerText =
@@ -117,7 +171,6 @@
       );
 
 
-      // 🎯 50 questions complete = +1 streak
       if (correctCount >= 50) {
 
         streak++;
@@ -142,14 +195,11 @@
 
       updateDisplays();
 
-
-      // 🔥 Correct hone ke baad hi NEW question
       setTimeout(newQuestion, 1000);
 
     }
 
 
-    // ❌ Wrong answer
     else {
 
       document.getElementById("result").innerText =
@@ -163,8 +213,6 @@
       );
 
       updateDisplays();
-
-      // ❌ New question nahi aayega
     }
   }
 
@@ -179,8 +227,9 @@
   }
 
 
-  // 🚀 Website open/refresh hone par
-  // saved question load hoga
   loadQuestion();
 
 </script>
+
+</body>
+</html>
