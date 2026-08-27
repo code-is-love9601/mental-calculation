@@ -60,22 +60,47 @@
 
   let num1, num2;
 
+
+  // 🔥 Streak load
   let streak = localStorage.getItem("streak")
     ? parseInt(localStorage.getItem("streak"))
     : 0;
 
+
+  // 📅 Last played date
   let lastPlayed = localStorage.getItem("lastPlayed");
 
+
+  // 📊 Correct count load
   let correctCount = localStorage.getItem("correctCount")
     ? parseInt(localStorage.getItem("correctCount"))
     : 0;
 
 
+  // 📅 Today's date
+  let today = new Date().toDateString();
+
+
+  // 🔥 NEW DAY
+  // Kal ka progress aaj 0 ho jayega
+  if (lastPlayed !== today) {
+
+    correctCount = 0;
+
+    localStorage.setItem(
+      "correctCount",
+      0
+    );
+  }
+
+
+  // 🎯 Tough number generator
   function getToughNumber(min, max) {
 
     let num;
 
     do {
+
       num = Math.floor(
         Math.random() * (max - min + 1)
       ) + min;
@@ -88,82 +113,122 @@
   }
 
 
+  // 🆕 New question
   function newQuestion() {
 
     num1 = getToughNumber(10, 99);
+
     num2 = getToughNumber(15, 975);
 
-    localStorage.setItem("num1", num1);
-    localStorage.setItem("num2", num2);
+
+    // Question save
+    localStorage.setItem(
+      "num1",
+      num1
+    );
+
+    localStorage.setItem(
+      "num2",
+      num2
+    );
+
 
     showQuestion();
   }
 
 
+  // 👀 Show question
   function showQuestion() {
 
     document.getElementById("question").innerText =
       `What is ${num1} × ${num2}?`;
 
+
     document.getElementById("answer").value = "";
+
 
     document.getElementById("result").innerText = "";
 
+
     updateDisplays();
+
 
     document.getElementById("answer").focus();
   }
 
 
+  // 📥 Load saved question
   function loadQuestion() {
 
-    let savedNum1 = localStorage.getItem("num1");
-    let savedNum2 = localStorage.getItem("num2");
+    let savedNum1 =
+      localStorage.getItem("num1");
 
-    if (savedNum1 !== null && savedNum2 !== null) {
+    let savedNum2 =
+      localStorage.getItem("num2");
+
+
+    if (
+      savedNum1 !== null &&
+      savedNum2 !== null
+    ) {
 
       num1 = parseInt(savedNum1);
+
       num2 = parseInt(savedNum2);
 
       showQuestion();
 
-    } else {
+    }
+
+    else {
 
       newQuestion();
     }
   }
 
 
+  // ✅ Check answer
   function checkAnswer() {
 
     let userAnswer =
       document.getElementById("answer").value;
 
-    let correctAnswer = num1 * num2;
 
-    let today = new Date().toDateString();
+    let correctAnswer =
+      num1 * num2;
 
 
-    if (parseInt(userAnswer) === correctAnswer) {
+    let currentDate =
+      new Date().toDateString();
+
+
+    // ✅ CORRECT
+    if (
+      parseInt(userAnswer) === correctAnswer
+    ) {
 
       document.getElementById("result").innerText =
         "✅ Correct!";
 
 
-      if (lastPlayed !== today) {
+      // New day protection
+      if (lastPlayed !== currentDate) {
 
         correctCount = 0;
 
-        lastPlayed = today;
+        lastPlayed = currentDate;
+
 
         localStorage.setItem(
           "lastPlayed",
-          today
+          currentDate
         );
       }
 
 
+      // +1 correct
       correctCount++;
+
 
       localStorage.setItem(
         "correctCount",
@@ -171,21 +236,32 @@
       );
 
 
+      // 🎯 50 correct complete
       if (correctCount >= 50) {
 
         streak++;
 
         correctCount = 0;
 
+
         localStorage.setItem(
           "streak",
           streak
         );
 
+
         localStorage.setItem(
           "correctCount",
-          correctCount
+          0
         );
+
+
+        // Date save
+        localStorage.setItem(
+          "lastPlayed",
+          currentDate
+        );
+
 
         alert(
           "🎉 You completed 50 questions today! Streak +1 day!"
@@ -195,38 +271,53 @@
 
       updateDisplays();
 
-      setTimeout(newQuestion, 1000);
+
+      // 🆕 Correct hone ke baad new question
+      setTimeout(
+        newQuestion,
+        1000
+      );
 
     }
 
 
+    // ❌ WRONG
     else {
 
       document.getElementById("result").innerText =
         "❌ Wrong. Try again!";
 
+
+      // Wrong answer par progress reset
       correctCount = 0;
+
 
       localStorage.setItem(
         "correctCount",
-        correctCount
+        0
       );
 
+
       updateDisplays();
+
+      // Same question rahega
     }
   }
 
 
+  // 📊 Update display
   function updateDisplays() {
 
     document.getElementById("streak").innerText =
       `🔥 Current Streak: ${streak} days`;
+
 
     document.getElementById("progress").innerText =
       `📊 Progress: ${correctCount}/50 correct today`;
   }
 
 
+  // 🚀 Website open/refresh
   loadQuestion();
 
 </script>
